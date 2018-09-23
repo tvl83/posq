@@ -128,3 +128,11 @@ CMakeLists.txt
 cmake-build-debug
 config.log
 config.status
+
+build.h
+*.mk
+build-aux/
+libsecp256k1-config.h
+libsecp256k1-config.h.in
+libsecp256k1.pc
+stamp-h1
