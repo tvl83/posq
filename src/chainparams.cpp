@@ -260,15 +260,15 @@ public:
         pchMessageStart[2] = 0x65;
         pchMessageStart[3] = 0xba;
         vAlertPubKey = ParseHex("042292b1f401860eea99e1a8a103effbd7e1c013a59a1a3a0c91c9d1997a0bc6f338567278c11344802838c107055bf7c1641eaed61e879245c255a4f5be5746fc");
-        nDefaultPort = 51434;
+        nDefaultPort = 51464;
         nEnforceBlockUpgradeMajority = 51;
         nRejectBlockOutdatedMajority = 75;
         nToCheckBlockUpgradeMajority = 100;
         nMinerThreads = 0;
         nTargetTimespan = 1 * 60; // Poseidon: 1 day
         nTargetSpacing = 1 * 60;  // Poseidon: 1 minute
-        nLastPOWBlock = 200;
-        nMaturity = 15;
+        nLastPOWBlock = 25;
+        nMaturity = 3;
         nMasternodeCountDrift = 4;
         nModifierUpdateBlock = 51197; //approx Mon, 17 Apr 2017 04:00:00 GMT
         nMaxMoneyOut = 43199500 * COIN;
@@ -280,17 +280,41 @@ public:
         nBlockLastGoodCheckpoint = 9891730; //Last valid accumulator checkpoint
         
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
-        genesis.nTime = 1515616140;
-        genesis.nNonce = 79855;
+        genesis.nTime = 1537667000;
+        genesis.nNonce = 93469;
 
-	    hashGenesisBlock = genesis.GetHash();
+        hashGenesisBlock = genesis.GetHash();
         //assert(hashGenesisBlock == uint256("0x000007cff63ef602a51bf074e384b3516f0dd202f14d52f7c8c9b1af9423ab2e"));
+        if(genesis.GetHash() != uint256("0000095e7aae318743a48aa2bac85d70ec8f2018b249470caaf73be08ea83f7b"))
+        {
+            printf("Searching for genesis block...\n");
+            uint256 hashTarget = CBigNum().SetCompact(genesis.nBits).getuint256();
+            while(uint256(genesis.GetHash()) > hashTarget)
+            {
+                ++genesis.nNonce;
+                if (genesis.nNonce == 0)
+                {
+                    printf("NONCE WRAPPED, incrementing time");
+                    std::cout << std::string("NONCE WRAPPED, incrementing time:\n");
+                    ++genesis.nTime;
+                }
+                if (genesis.nNonce % 10000 == 0)
+                {
+                    printf("Testnet: nonce %08u: hash = %s \n", genesis.nNonce, genesis.GetHash().ToString().c_str());
+                }
+            }
+            printf("block.nTime = %u \n", genesis.nTime);
+            printf("block.nNonce = %u \n", genesis.nNonce);
+            printf("block.GetHash = %s\n", genesis.GetHash().ToString().c_str());
+            printf("block.hashMerkleRoot = %s\n", genesis.hashMerkleRoot.ToString().c_str());
+        }
+        assert(hashGenesisBlock == uint256("0000095e7aae318743a48aa2bac85d70ec8f2018b249470caaf73be08ea83f7b"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
-        vSeeds.push_back(CDNSSeedData("45.76.61.28", "207.148.0.129"));         // Single node address
-        vSeeds.push_back(CDNSSeedData("209.250.240.94", "45.77.239.30"));       // Single node address
-        vSeeds.push_back(CDNSSeedData("45.77.176.204", "45.76.226.204"));       // Single node address
+        //vSeeds.push_back(CDNSSeedData("45.76.61.28", "207.148.0.129"));         // Single node address
+        //vSeeds.push_back(CDNSSeedData("209.250.240.94", "45.77.239.30"));       // Single node address
+        //vSeeds.push_back(CDNSSeedData("45.77.176.204", "45.76.226.204"));       // Single node address
 
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 139); // Testnet poseidon addresses start with 'x' or 'y'
